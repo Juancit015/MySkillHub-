@@ -1,0 +1,83 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import TypeBadge from "../../../components/TypeBadge.astro";
+import LicenseBadge from "../../../components/LicenseBadge.astro";
+import CompatibilityIcons from "../../../components/CompatibilityIcons.astro";
+import { ui } from "../../../i18n/ui";
+
+const locale = "es" as const;
+const t = ui[locale];
+const base = "/es";
+
+export async function getStaticPaths() {
+  const skills = await getCollection("skills");
+  return skills.map((skill) => ({ params: { id: skill.slug }, props: { skill } }));
+}
+
+const { skill } = Astro.props;
+const { Content } = await skill.render();
+const data = skill.data;
+const desc = data.description[locale] || data.description.en;
+const dateStr = data.last_checked.toISOString().slice(0, 10);
+
+const licenseNoticeText =
+  data.license_notice === "non-commercial" ? t.noticeNonCommercial
+  : data.license_notice === "limited" ? t.noticeLimited
+  : null;
+---
+
+<BaseLayout title={`${data.name} — MyAgentSkills`} locale={locale}>
+  <div class="container">
+    <div class="skill-page">
+      <a href={`${base}/`} style="color: var(--color-text-muted); font-size: 0.9rem; display: inline-block; margin-bottom: 16px;">&larr; {t.backToAll}</a>
+
+      <div class="skill-header">
+        <h1>{data.name}</h1>
+        <div class="meta-row">
+          <span class="author">por {data.author}</span>
+          <div class="badges-row">
+            <TypeBadge type={data.type} />
+            {data.license_notice !== "none" && <LicenseBadge notice={data.license_notice} locale={locale} />}
+          </div>
+        </div>
+        <p style="color: var(--color-text-muted); font-size: 1.05rem; max-width: 720px;">{desc}</p>
+      </div>
+
+      {licenseNoticeText && (
+        <div class="notice-license">
+          <strong>&#9888; {t.licenseLabel}</strong>
+          <p>{licenseNoticeText} <code>{data.license}</code></p>
+        </div>
+      )}
+
+      <div class="skill-body">
+        <div class="content">
+          <Content />
+        </div>
+        <aside class="skill-aside">
+          <div class="block">
+            <h4>{t.repoLink}</h4>
+            <a href={data.repository} target="_blank" rel="noopener" class="repo-link">Ver en GitHub &rarr;</a>
+          </div>
+          <div class="block">
+            <h4>{t.compatLabel}</h4>
+            <CompatibilityIcons compatibility={data.compatibility} />
+          </div>
+          <div class="block">
+            <h4>{t.tagsLabel}</h4>
+            <div class="tags-row" style="display:flex;flex-wrap:wrap;gap:6px">
+              {data.tags.map((tag) => <span class="tag">#{tag}</span>)}
+            </div>
+          </div>
+          <div class="block">
+            <h4>{t.licenseLabel}</h4>
+            <div class="field"><span class="label">{data.license}</span></div>
+            <div class="field"><span class="label">{t.typeLabel}:</span> {data.type}</div>
+            <div class="field"><span class="label">Última verificación:</span> {dateStr}</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

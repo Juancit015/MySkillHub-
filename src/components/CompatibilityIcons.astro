@@ -1,0 +1,26 @@
+---
+export interface Props {
+  compatibility: string[];
+}
+
+const { compatibility } = Astro.props;
+const labels: Record<string, string> = {
+  "claude-code": "Claude Code",
+  "opencode": "OpenCode",
+  "codex": "Codex",
+  "gemini": "Gemini",
+  "cursor": "Cursor",
+  "copilot": "Copilot",
+  "grok": "Grok",
+  "antigravity": "Antigravity",
+  "unknown": "Unknown",
+};
+
+const chips = compatibility.map((c) => ({ id: c, label: labels[c] || c }));
+---
+
+<div class="compat-icons">
+  {chips.map((chip) => (
+    <span class="compat-chip">{chip.label}</span>
+  ))}
+</div>

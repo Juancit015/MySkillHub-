@@ -1,0 +1,7 @@
+{
+  "id": "memory",
+  "name": {"en": "Memory", "es": "Memoria"},
+  "description": {"en": "Skills that give agents persistent memory across sessions, remembering facts, preferences and past mistakes.", "es": "Skills que dan a los agentes memoria persistente entre sesiones, recordando hechos, preferencias y errores pasados."},
+  "icon": "database",
+  "order": 3
+}

@@ -1,0 +1,7 @@
+{
+  "id": "agent-ecosystem",
+  "name": {"en": "Agent Ecosystem", "es": "Ecosistema de agentes"},
+  "description": {"en": "Tools, plugins and meta-skills that operate on the agent ecosystem itself: discovery, multi-agent orchestration and skill self-improvement.", "es": "Herramientas, plugins y meta-skills que operan sobre el propio ecosistema de agentes: descubrimiento, orquestación multi-agente y auto-mejora de skills."},
+  "icon": "network",
+  "order": 7
+}

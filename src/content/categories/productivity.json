@@ -1,0 +1,7 @@
+{
+  "id": "productivity",
+  "name": {"en": "Productivity", "es": "Productividad"},
+  "description": {"en": "Skills that reduce token usage, context bloat and API cost without losing information quality.", "es": "Skills que reducen el uso de tokens, el inflado del contexto y el coste de API sin perder calidad de información."},
+  "icon": "gauge",
+  "order": 4
+}

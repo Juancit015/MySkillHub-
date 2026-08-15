@@ -1,0 +1,44 @@
+---
+export interface Props {
+  locale?: "en" | "es";
+}
+
+const { locale = "en" } = Astro.props;
+const placeholder = locale === "es" ? "Busca cualquier skill" : "Search skills...";
+const separator = locale === "es" ? "de" : "of";
+---
+
+<div class="search-wrap">
+  <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+  <input id="search" type="text" placeholder={placeholder} autocomplete="off" data-separator={separator} />
+</div>
+
+<script>
+  const input = document.getElementById("search") as HTMLInputElement;
+  const sep = input.dataset.separator || "of";
+  const cards = document.querySelectorAll<HTMLElement>("#skills-grid .card");
+  const total = cards.length;
+  const empty = document.getElementById("search-no-results");
+  const counter = document.getElementById("results-count");
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    let matches = 0;
+    cards.forEach((card) => {
+      const hit = q.length < 2 || card.textContent.toLowerCase().includes(q);
+      card.style.display = hit ? "" : "none";
+      if (hit) matches++;
+    });
+
+    if (empty) empty.style.display = q.length >= 2 && matches === 0 ? "" : "none";
+    if (counter) {
+      counter.textContent =
+        q.length >= 2
+          ? matches + " " + sep + " " + total + " skills"
+          : total + " skills";
+    }
+  });
+</script>

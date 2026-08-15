@@ -1,0 +1,7 @@
+{
+  "id": "design",
+  "name": {"en": "Design", "es": "Diseño"},
+  "description": {"en": "Skills that help agents avoid generic AI design slop and elevate the visual quality of the interfaces they build.", "es": "Skills que ayudan a los agentes a evitar el slop de diseño genérico de IA y elevar la calidad visual de las interfaces que construyen."},
+  "icon": "palette",
+  "order": 1
+}

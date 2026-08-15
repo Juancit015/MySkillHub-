@@ -1,0 +1,41 @@
+---
+import TypeBadge from "./TypeBadge.astro";
+import LicenseBadge from "./LicenseBadge.astro";
+import CompatibilityIcons from "./CompatibilityIcons.astro";
+
+export interface Props {
+  skill: {
+    id: string;
+    name: string;
+    description: { en: string; es?: string };
+    author: string;
+    type: "skill" | "plugin" | "tool" | "collection";
+    license_notice: "none" | "non-commercial" | "limited";
+    compatibility: string[];
+    tags: string[];
+  };
+  href: string;
+  locale?: "en" | "es";
+}
+
+const { skill, href, locale = "en" } = Astro.props;
+const desc = skill.description[locale] || skill.description.en;
+const visibleTags = skill.tags.slice(0, 4);
+const extraTags = skill.tags.length - visibleTags.length;
+---
+
+<a href={href} class="card">
+  <div class="badges-row">
+    <TypeBadge type={skill.type} />
+    {skill.license_notice !== "none" && (
+      <LicenseBadge notice={skill.license_notice} locale={locale} />
+    )}
+  </div>
+  <h3>{skill.name}</h3>
+  <div class="author">by {skill.author}</div>
+  <p class="desc">{desc}</p>
+  <div class="tags-row">
+    {visibleTags.map((tag) => <span class="tag">#{tag}</span>)}
+    {extraTags > 0 && <span class="tag">+{extraTags}</span>}
+  </div>
+</a>

@@ -1,0 +1,7 @@
+{
+  "id": "content-hygiene",
+  "name": {"en": "Content Hygiene", "es": "Higiene de contenido"},
+  "description": {"en": "Skills that strip unwanted marks, watermarks and metadata from generated content.", "es": "Skills que eliminan marcas, watermarks y metadatos no deseados del contenido generado."},
+  "icon": "eraser",
+  "order": 6
+}

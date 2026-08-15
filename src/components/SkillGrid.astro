@@ -1,0 +1,69 @@
+---
+import type { CollectionEntry } from "astro:content";
+import SkillCard from "./SkillCard.astro";
+
+export interface Props {
+  skills: CollectionEntry<"skills">[];
+  locale: "en" | "es";
+  base: string;
+  sort?: "stars" | "name" | "new";
+  ui: any;
+}
+
+const { skills, locale, base, sort = "stars", ui } = Astro.props;
+
+const sorted = [...skills].sort((a, b) => {
+  if (sort === "name") return a.data.name.localeCompare(b.data.name);
+  if (sort === "new") return b.data.created_at.getTime() - a.data.created_at.getTime();
+  return 0;
+});
+---
+
+<div class="toolbar">
+  <div class="results-count" id="results-count">{ui.resultsCount(skills.length)}</div>
+  <select class="sort-select" data-sort>
+    <option value="stars" selected>{ui.sortStars}</option>
+    <option value="name">{ui.sortName}</option>
+    <option value="new">{ui.sortNew}</option>
+  </select>
+</div>
+
+{sorted.length === 0 ? (
+  <p class="results-count" style="padding:40px 0">{ui.noResults}</p>
+) : (
+  <div class="grid" id="skills-grid">
+    {sorted.map((skill) => (
+      <SkillCard
+        skill={{
+          id: skill.data.id,
+          name: skill.data.name,
+          description: skill.data.description,
+          author: skill.data.author,
+          type: skill.data.type,
+          license_notice: skill.data.license_notice,
+          compatibility: skill.data.compatibility,
+          tags: skill.data.tags,
+        }}
+        href={`${base}/skills/${skill.slug}`}
+        locale={locale}
+      />
+    ))}
+  </div>
+)}
+<p id="search-no-results" style="display: none; padding: 40px 0; color: var(--color-text-muted);">{ui.noResults}</p>
+
+<script>
+  const select = document.querySelector("[data-sort]") as HTMLSelectElement;
+  const grid = document.getElementById("skills-grid");
+  if (select && grid) {
+    select.addEventListener("change", () => {
+      const cards = Array.from(grid!.children) as HTMLElement[];
+      const sorted = cards.sort((a, b) => {
+        const at = a.querySelector("h3")?.textContent || "";
+        const bt = b.querySelector("h3")?.textContent || "";
+        return select.value === "name" ? at.localeCompare(bt) : 0;
+      });
+      sorted.forEach((c) => grid!.appendChild(c));
+    });
+  }
+</script>

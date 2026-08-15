@@ -1,0 +1,58 @@
+---
+import { getCollection } from "astro:content";
+
+export interface Props {
+  current?: string;
+  locale?: "en" | "es";
+  base?: string;
+}
+
+const { current, locale = "en", base = "" } = Astro.props;
+
+const categories = (await getCollection("categories")).sort((a, b) => a.data.order - b.data.order);
+const skills = await getCollection("skills");
+
+const counts = new Map<string, number>();
+for (const skill of skills) {
+  const c = skill.data.category_id;
+  counts.set(c, (counts.get(c) || 0) + 1);
+}
+
+const labels = {
+  all: locale === "es" ? "Todas" : "All",
+  categories: locale === "es" ? "Categorías" : "Categories",
+  type: locale === "es" ? "Tipo" : "Type",
+  types: locale === "es"
+    ? { skill: "Skill", plugin: "Plugin", tool: "Herramienta", collection: "Colección" }
+    : { skill: "Skill", plugin: "Plugin", tool: "Tool", collection: "Collection" },
+};
+
+const allHref = `${base}/`;
+const typeCounts = { skill: 0, plugin: 0, tool: 0, collection: 0 } as Record<string, number>;
+for (const s of skills) typeCounts[s.data.type]++;
+---
+
+<aside class="sidebar">
+  <div class="filter-group">
+    <h3>{labels.categories}</h3>
+    <a href={allHref} class={`filter-item ${!current ? "active" : ""}`}>
+      <span>{labels.all}</span>
+      <span class="count">{skills.length}</span>
+    </a>
+    {categories.map((cat) => (
+      <a href={`${base}/categories/${cat.data.id}`} class={`filter-item ${current === cat.data.id ? "active" : ""}`}>
+        <span>{cat.data.name[locale]}</span>
+        <span class="count">{counts.get(cat.data.id) || 0}</span>
+      </a>
+    ))}
+  </div>
+  <div class="filter-group">
+    <h3>{labels.type}</h3>
+    {(["skill", "plugin", "tool", "collection"] as const).map((t) => (
+      <div class="filter-item" data-type={t} style="display:none">
+        <span>{labels.types[t]}</span>
+        <span class="count">{typeCounts[t]}</span>
+      </div>
+    ))}
+  </div>
+</aside>

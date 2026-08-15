@@ -1,0 +1,7 @@
+{
+  "id": "development",
+  "name": {"en": "Development", "es": "Desarrollo"},
+  "description": {"en": "Skills that give coding agents a structured software development methodology instead of jumping straight into code.", "es": "Skills que dan a los agentes de código una metodología estructurada de desarrollo de software en lugar de lanzarse directo a escribir código."},
+  "icon": "code-2",
+  "order": 2
+}

@@ -1,0 +1,15 @@
+---
+export interface Props {
+  type: "skill" | "plugin" | "tool" | "collection";
+}
+
+const { type } = Astro.props;
+const colors = {
+  skill: "skill",
+  plugin: "plugin",
+  tool: "tool",
+  collection: "collection",
+};
+---
+
+<span class={`badge badge-type ${colors[type]}`}>{type}</span>

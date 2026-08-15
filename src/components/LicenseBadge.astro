@@ -1,0 +1,25 @@
+---
+export interface Props {
+  notice: "none" | "non-commercial" | "limited";
+  locale?: "en" | "es";
+}
+
+const { notice, locale = "en" } = Astro.props;
+
+if (notice === "none") return;
+
+const labels = {
+  "non-commercial": {
+    en: "Non-commercial license",
+    es: "Licencia no-comercial",
+  },
+  limited: {
+    en: "Limited license",
+    es: "Licencia limitada",
+  },
+};
+
+const label = labels[notice][locale];
+---
+
+<span class="badge badge-license" title={label}>{label}</span>

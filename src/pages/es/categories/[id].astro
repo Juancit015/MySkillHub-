@@ -1,0 +1,39 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CategoryFilter from "../../../components/CategoryFilter.astro";
+import SkillGrid from "../../../components/SkillGrid.astro";
+import { ui } from "../../../i18n/ui";
+
+const locale = "es" as const;
+const t = ui[locale];
+const base = "/es";
+
+export async function getStaticPaths() {
+  const cats = await getCollection("categories");
+  return cats.map((c) => ({ params: { id: c.data.id }, props: { category: c } }));
+}
+
+const { category } = Astro.props;
+const allSkills = (await getCollection("skills")).filter((s) => s.data.status === "ACTIVE");
+const skills = allSkills.filter((s) => s.data.category_id === category.data.id);
+---
+
+<BaseLayout title={`${category.data.name.es} — MyAgentSkills`} locale={locale}>
+  <div class="container">
+    <div class="skill-page">
+      <div class="category-header">
+        <a href={`${base}/`} style="color: var(--color-text-muted); font-size: 0.9rem; display: inline-block; margin-bottom: 12px;">&larr; {t.backToAll}</a>
+        <h1>{category.data.name[locale]}</h1>
+        <p>{category.data.description[locale]}</p>
+      </div>
+    </div>
+
+    <layout-grid>
+      <CategoryFilter current={category.data.id} locale={locale} base={base} />
+      <main>
+        <SkillGrid skills={skills} locale={locale} base={base} ui={t} />
+      </main>
+    </layout-grid>
+  </div>
+</BaseLayout>

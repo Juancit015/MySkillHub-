@@ -1,0 +1,91 @@
+---
+import "../styles/global.css";
+
+export interface Props {
+  title?: string;
+  locale?: "en" | "es";
+}
+
+const { title = "MyAgentSkills", locale = "en" } = Astro.props;
+const path = Astro.url.pathname.replace(/^\/|\/$/g, "");
+const segments = path.split("/").filter(Boolean);
+const isEs = segments[0] === "es";
+const base = isEs ? "/es" : "";
+
+const nav = [
+  { en: { href: `${base}/`, label: "All skills" }, es: { href: `${base}/`, label: "Todas las skills" } },
+  { en: { href: `${base}/categories/design`, label: "Design" }, es: { href: `${base}/categories/design`, label: "Diseño" } },
+  { en: { href: `${base}/categories/development`, label: "Development" }, es: { href: `${base}/categories/development`, label: "Desarrollo" } },
+  { en: { href: `${base}/categories/memory`, label: "Memory" }, es: { href: `${base}/categories/memory`, label: "Memoria" } },
+  { en: { href: `${base}/categories/productivity`, label: "Productivity" }, es: { href: `${base}/categories/productivity`, label: "Productividad" } },
+];
+
+const t = locale === "es" ? {
+  tagline: "Encuentra las skills correctas para tu agente de IA.",
+} : {
+  tagline: "Find the right skills for your AI agent.",
+};
+
+const currentPath = Astro.url.pathname;
+const cleanPath = isEs ? path.slice(3).replace(/^\//, "") : path;
+const enHref = `/${cleanPath}`;
+const esHref = `/es/${cleanPath}`;
+const isActive = (href: string) =>
+  href === `${base}/` ? currentPath === `${base}/` : currentPath.startsWith(href);
+---
+
+<html lang={locale}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <title>{title}</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href={`${base}/`} class="logo">
+        <span style="color: var(--color-primary-hover)">>_</span> MyAgentSkills
+      </a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="site-nav">
+        <div class="nav-inner">
+        {nav.map((item) => (
+          <a href={item[locale].href} class:list={{ active: isActive(item[locale].href) }}>{item[locale].label}</a>
+        ))}
+        <div class="locale-switch">
+          <a href={locale === "en" ? currentPath : enHref} class={locale === "en" ? "active" : ""}>EN</a>
+          <a href={locale === "es" ? currentPath : esHref} class={locale === "es" ? "active" : ""}>ES</a>
+        </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+  <slot />
+  <footer class="site-footer">
+    <div class="container">
+      <p>MyAgentSkills &middot; {t.tagline} &middot; 2026</p>
+    </div>
+  </footer>
+  <script>
+    const toggle = document.getElementById("menu-toggle");
+    const nav = document.getElementById("site-nav");
+    if (toggle && nav) {
+      toggle.addEventListener("click", function () {
+        const open = nav.classList.toggle("open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.classList.toggle("active", open);
+      });
+      nav.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () {
+          nav.classList.remove("open");
+          toggle.classList.remove("active");
+          toggle.setAttribute("aria-expanded", "false");
+        });
+      });
+    }
+  </script>
+</body>
+</html>

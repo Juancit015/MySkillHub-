@@ -1,0 +1,7 @@
+{
+  "id": "writing",
+  "name": {"en": "Writing", "es": "Escritura"},
+  "description": {"en": "Skills that remove signs of AI-generated writing and produce natural, human-sounding text.", "es": "Skills que eliminan las señales de escritura generada por IA y producen texto natural que suena humano."},
+  "icon": "pen-line",
+  "order": 5
+}

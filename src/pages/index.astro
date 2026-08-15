@@ -1,0 +1,31 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CategoryFilter from "../components/CategoryFilter.astro";
+import SearchBar from "../components/SearchBar.astro";
+import SkillGrid from "../components/SkillGrid.astro";
+import { ui } from "../i18n/ui";
+
+const locale = "en" as const;
+const t = ui[locale];
+const base = "";
+
+const skills = (await getCollection("skills")).filter((s) => s.data.status === "ACTIVE");
+---
+
+<BaseLayout title={`MyAgentSkills — ${t.heroTitle1} ${t.heroTitle2} ${t.heroTitle3}`} locale={locale}>
+  <section class="hero container">
+    <h1>{t.heroTitle1} <span>{t.heroTitle2}</span> {t.heroTitle3}</h1>
+    <p>{t.heroSubtitle}</p>
+    <SearchBar locale={locale} />
+  </section>
+
+  <div class="container">
+    <layout-grid>
+      <CategoryFilter locale={locale} base={base} />
+      <main>
+        <SkillGrid skills={skills} locale={locale} base={base} ui={t} />
+      </main>
+    </layout-grid>
+  </div>
+</BaseLayout>
