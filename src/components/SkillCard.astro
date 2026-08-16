@@ -1,7 +1,6 @@
 ---
 import TypeBadge from "./TypeBadge.astro";
 import LicenseBadge from "./LicenseBadge.astro";
-import CompatibilityIcons from "./CompatibilityIcons.astro";
 
 export interface Props {
   skill: {
@@ -13,26 +12,41 @@ export interface Props {
     license_notice: "none" | "non-commercial" | "limited";
     compatibility: string[];
     tags: string[];
+    created_at?: Date;
   };
   href: string;
   locale?: "en" | "es";
+  authorBy?: string;
 }
 
-const { skill, href, locale = "en" } = Astro.props;
+const { skill, href, locale = "en", authorBy } = Astro.props;
 const desc = skill.description[locale] || skill.description.en;
 const visibleTags = skill.tags.slice(0, 4);
 const extraTags = skill.tags.length - visibleTags.length;
+const by = authorBy || (locale === "es" ? "por" : "by");
+const created = skill.created_at ? skill.created_at.toISOString().slice(0, 10) : "";
 ---
 
-<a href={href} class="card">
+<a
+  href={href}
+  class="card"
+  data-type={skill.type}
+  data-created={created}
+>
   <div class="badges-row">
-    <TypeBadge type={skill.type} />
-    {skill.license_notice !== "none" && (
-      <LicenseBadge notice={skill.license_notice} locale={locale} />
-    )}
+    <div class="badges-left">
+      <TypeBadge type={skill.type} />
+      {skill.license_notice !== "none" && (
+        <LicenseBadge notice={skill.license_notice} locale={locale} />
+      )}
+    </div>
+    <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M7 17L17 7" />
+      <path d="M7 7h10v10" />
+    </svg>
   </div>
   <h3>{skill.name}</h3>
-  <div class="author">by {skill.author}</div>
+  <div class="author">{by} {skill.author}</div>
   <p class="desc">{desc}</p>
   <div class="tags-row">
     {visibleTags.map((tag) => <span class="tag">#{tag}</span>)}

@@ -11,21 +11,32 @@ const t = ui[locale];
 const base = "";
 
 const skills = (await getCollection("skills")).filter((s) => s.data.status === "ACTIVE");
+const examples = skills.slice(0, 5);
 ---
 
 <BaseLayout title={`MyAgentSkills — ${t.heroTitle1} ${t.heroTitle2} ${t.heroTitle3}`} locale={locale}>
   <section class="hero container">
     <h1>{t.heroTitle1} <span>{t.heroTitle2}</span> {t.heroTitle3}</h1>
     <p>{t.heroSubtitle}</p>
-    <SearchBar locale={locale} />
+    <div class="search-card">
+      <div class="search-row">
+        <SearchBar locale={locale} />
+      </div>
+      <div class="example-row">
+        <span class="example-label">{t.tryExamples}</span>
+        <div class="example-chips">
+          {examples.map((skill) => (
+            <button type="button" class="example-chip" data-example={skill.data.name}>{skill.data.name}</button>
+          ))}
+        </div>
+      </div>
+    </div>
   </section>
 
   <div class="container">
-    <layout-grid>
-      <CategoryFilter locale={locale} base={base} />
-      <main>
-        <SkillGrid skills={skills} locale={locale} base={base} ui={t} />
-      </main>
-    </layout-grid>
+    <CategoryFilter variant="chips" locale={locale} base={base} />
+    <main>
+      <SkillGrid skills={skills} locale={locale} base={base} ui={t} />
+    </main>
   </div>
 </BaseLayout>

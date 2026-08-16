@@ -4,8 +4,9 @@ export interface Props {
 }
 
 const { locale = "en" } = Astro.props;
-const placeholder = locale === "es" ? "Busca cualquier skill" : "Search skills...";
+const placeholder = locale === "es" ? "Busca cualquier skill..." : "Search for skills, tags, or authors...";
 const separator = locale === "es" ? "de" : "of";
+const searchLabel = locale === "es" ? "Buscar" : "Search";
 ---
 
 <div class="search-wrap">
@@ -15,30 +16,4 @@ const separator = locale === "es" ? "de" : "of";
   </svg>
   <input id="search" type="text" placeholder={placeholder} autocomplete="off" data-separator={separator} />
 </div>
-
-<script>
-  const input = document.getElementById("search") as HTMLInputElement;
-  const sep = input.dataset.separator || "of";
-  const cards = document.querySelectorAll<HTMLElement>("#skills-grid .card");
-  const total = cards.length;
-  const empty = document.getElementById("search-no-results");
-  const counter = document.getElementById("results-count");
-
-  input.addEventListener("input", () => {
-    const q = input.value.trim().toLowerCase();
-    let matches = 0;
-    cards.forEach((card) => {
-      const hit = q.length < 2 || card.textContent.toLowerCase().includes(q);
-      card.style.display = hit ? "" : "none";
-      if (hit) matches++;
-    });
-
-    if (empty) empty.style.display = q.length >= 2 && matches === 0 ? "" : "none";
-    if (counter) {
-      counter.textContent =
-        q.length >= 2
-          ? matches + " " + sep + " " + total + " skills"
-          : total + " skills";
-    }
-  });
-</script>
+<button type="button" class="search-btn" id="search-btn">{searchLabel}</button>

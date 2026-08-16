@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { getCollection } from "astro:content";
 
 export interface Props {
   title?: string;
@@ -12,13 +13,8 @@ const segments = path.split("/").filter(Boolean);
 const isEs = segments[0] === "es";
 const base = isEs ? "/es" : "";
 
-const nav = [
-  { en: { href: `${base}/`, label: "All skills" }, es: { href: `${base}/`, label: "Todas las skills" } },
-  { en: { href: `${base}/categories/design`, label: "Design" }, es: { href: `${base}/categories/design`, label: "Diseño" } },
-  { en: { href: `${base}/categories/development`, label: "Development" }, es: { href: `${base}/categories/development`, label: "Desarrollo" } },
-  { en: { href: `${base}/categories/memory`, label: "Memory" }, es: { href: `${base}/categories/memory`, label: "Memoria" } },
-  { en: { href: `${base}/categories/productivity`, label: "Productivity" }, es: { href: `${base}/categories/productivity`, label: "Productividad" } },
-];
+const categories = (await getCollection("categories")).sort((a, b) => a.data.order - b.data.order);
+const navCategories = categories.slice(0, 4);
 
 const t = locale === "es" ? {
   tagline: "Encuentra las skills correctas para tu agente de IA.",
@@ -39,21 +35,29 @@ const isActive = (href: string) =>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
   <title>{title}</title>
 </head>
 <body>
   <header class="site-header">
     <div class="container">
       <a href={`${base}/`} class="logo">
-        <span style="color: var(--color-primary-hover)">>_</span> MyAgentSkills
+        <span>&gt;_</span> MyAgent<span style="color: var(--color-accent)">Skills</span>
       </a>
       <button class="menu-toggle" id="menu-toggle" aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
       <nav id="site-nav">
         <div class="nav-inner">
-        {nav.map((item) => (
-          <a href={item[locale].href} class:list={{ active: isActive(item[locale].href) }}>{item[locale].label}</a>
+        <a href={`${base}/`} class:list={{ active: isActive(`${base}/`) }}>
+          {locale === "es" ? "Todas las skills" : "All skills"}
+        </a>
+        {navCategories.map((cat) => (
+          <a href={`${base}/categories/${cat.data.id}`} class:list={{ active: isActive(`${base}/categories/${cat.data.id}`) }}>
+            {cat.data.name[locale]}
+          </a>
         ))}
         <div class="locale-switch">
           <a href={locale === "en" ? currentPath : enHref} class={locale === "en" ? "active" : ""}>EN</a>
@@ -66,10 +70,16 @@ const isActive = (href: string) =>
   <slot />
   <footer class="site-footer">
     <div class="container">
-      <p>MyAgentSkills &middot; {t.tagline} &middot; 2026</p>
+      <div class="footer-brand">MyAgentSkills&gt;_</div>
+      <p>{t.tagline} &middot; 2026</p>
+      <div class="footer-langs">
+        <a href={locale === "en" ? currentPath : enHref} class={locale === "en" ? "active" : ""}>EN</a>
+        <a href={locale === "es" ? currentPath : esHref} class={locale === "es" ? "active" : ""}>ES</a>
+      </div>
     </div>
   </footer>
   <script>
+    import { initCatalog } from "../scripts/catalog";
     const toggle = document.getElementById("menu-toggle");
     const nav = document.getElementById("site-nav");
     if (toggle && nav) {
@@ -86,6 +96,7 @@ const isActive = (href: string) =>
         });
       });
     }
+    initCatalog();
   </script>
 </body>
 </html>

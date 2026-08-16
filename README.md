@@ -2,7 +2,7 @@
 
 Catálogo web bilingüe (inglés / español) de skills, plugins y herramientas para agentes de IA de código. Permite descubrir, comparar e instalar las skills que de verdad mejoran a tu coding agent (Claude Code, OpenCode, Codex, Gemini, Cursor, Copilot, Grok, Antigravity). Sitio estático generado con [Astro](https://astro.build) e indexado con [Pagefind](https://pagefind.app) para búsqueda.
 
-El catálogo lista 13 entradas curadas organizadas en 7 categorías, con fichas individuales por skill (descripción, autor, licencia, compatibilidad con agentes y tags), filtros por categoría y búsqueda en vivo.
+El catálogo lista 13 entradas curadas organizadas en 7 categorías, con fichas individuales por skill (descripción, autor, licencia, compatibilidad con agentes y tags), filtros por categoría y tipo, orden alfabético/por fecha y búsqueda en vivo.
 
 ## Stack
 
@@ -99,12 +99,14 @@ npm run check
     ├── i18n/
     │   └── ui.ts         Strings UI EN/ES (i18n manual, no astro-i18next)
     ├── layouts/
-    │   └── BaseLayout.astro   Header sticky, nav con hamburguesa móvil, locale switch EN/ES, footer
+    │   └── BaseLayout.astro   Header sticky, nav dinámica (top 4 categorías), hamburguesa móvil, locale switch EN/ES, footer
     ├── pages/
     │   ├── index.astro        Home en inglés (EN)
     │   ├── categories/[id].astro
     │   ├── skills/[id].astro
     │   └── es/                Rutas espejo en español (index, categories/[id], skills/[id])
+    ├── scripts/
+    │   └── catalog.ts     Lógica client-side: sort (name/new), filtro por tipo y búsqueda en vivo
     └── styles/
         └── global.css    Tema dark, cards, nav, search, badges
 ```

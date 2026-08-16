@@ -25,29 +25,54 @@ const licenseNoticeText =
   data.license_notice === "non-commercial" ? t.noticeNonCommercial
   : data.license_notice === "limited" ? t.noticeLimited
   : null;
+
+const statusText =
+  data.status === "UNAVAILABLE" ? t.statusUnavailable
+  : data.status === "ARCHIVED" ? t.statusArchived
+  : data.status === "MOVED" ? t.statusMoved
+  : "";
 ---
 
 <BaseLayout title={`${data.name} — MyAgentSkills`} locale={locale}>
   <div class="container">
     <div class="skill-page">
-      <a href={`${base}/`} style="color: var(--color-text-muted); font-size: 0.9rem; display: inline-block; margin-bottom: 16px;">&larr; {t.backToAll}</a>
+      <a href={`${base}/`} class="breadcrumb">&larr; {t.backToAll}</a>
 
       <div class="skill-header">
+        <div class="badges-row">
+          <TypeBadge type={data.type} />
+          {data.license_notice !== "none" && <LicenseBadge notice={data.license_notice} locale={locale} />}
+        </div>
         <h1>{data.name}</h1>
         <div class="meta-row">
-          <span class="author">by {data.author}</span>
-          <div class="badges-row">
-            <TypeBadge type={data.type} />
-            {data.license_notice !== "none" && <LicenseBadge notice={data.license_notice} locale={locale} />}
+          <span class="author">{t.authorBy} <strong>{data.author}</strong></span>
+        </div>
+        <p class="desc">{desc}</p>
+      </div>
+
+      {data.status !== "ACTIVE" && (
+        <div class="notice-license">
+          <span class="notice-icon">&#9888;</span>
+          <div>
+            <strong>{data.status}</strong>
+            <p>
+              {statusText}
+              {data.replaced_by && (
+                <a href={`${base}/skills/${data.replaced_by}`} style="margin-left: 8px; font-weight: 600;">{t.replacedBy} &rarr;</a>
+              )}
+            </p>
           </div>
         </div>
-        <p style="color: var(--color-text-muted); font-size: 1.05rem; max-width: 720px;">{desc}</p>
-      </div>
+      )}
 
       {licenseNoticeText && (
         <div class="notice-license">
-          <strong>&#9888; {t.licenseLabel}</strong>
-          <p>{licenseNoticeText} <code>{data.license}</code></p>
+          <span class="notice-icon">&#9888;</span>
+          <div>
+            <strong>{t.licenseLabel}</strong>
+            <p>{licenseNoticeText}</p>
+            <code>{data.license}</code>
+          </div>
         </div>
       )}
 
@@ -58,7 +83,13 @@ const licenseNoticeText =
         <aside class="skill-aside">
           <div class="block">
             <h4>{t.repoLink}</h4>
-            <a href={data.repository} target="_blank" rel="noopener" class="repo-link">View on GitHub &rarr;</a>
+            <a href={data.repository} target="_blank" rel="noopener" class="repo-link">
+              <span>View on GitHub</span>
+              <svg class="repo-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14" />
+                <path d="M13 6l6 6-6 6" />
+              </svg>
+            </a>
           </div>
           <div class="block">
             <h4>{t.compatLabel}</h4>
@@ -66,15 +97,15 @@ const licenseNoticeText =
           </div>
           <div class="block">
             <h4>{t.tagsLabel}</h4>
-            <div class="tags-row" style="display:flex;flex-wrap:wrap;gap:6px">
+            <div class="tags-row">
               {data.tags.map((tag) => <span class="tag">#{tag}</span>)}
             </div>
           </div>
           <div class="block">
             <h4>{t.licenseLabel}</h4>
-            <div class="field"><span class="label">{data.license}</span></div>
-            <div class="field"><span class="label">{t.typeLabel}:</span> {data.type}</div>
-            <div class="field"><span class="label">Last checked:</span> {dateStr}</div>
+            <div class="field"><span class="label">{t.licenseLabel}</span><span class="value">{data.license}</span></div>
+            <div class="field"><span class="label">{t.typeLabel}</span><span class="value">{data.type}</span></div>
+            <div class="field"><span class="label">{t.lastChecked}</span><span class="value">{dateStr}</span></div>
           </div>
         </aside>
       </div>

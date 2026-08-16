@@ -5,9 +5,10 @@ export interface Props {
   current?: string;
   locale?: "en" | "es";
   base?: string;
+  variant?: "sidebar" | "chips";
 }
 
-const { current, locale = "en", base = "" } = Astro.props;
+const { current, locale = "en", base = "", variant = "sidebar" } = Astro.props;
 
 const categories = (await getCollection("categories")).sort((a, b) => a.data.order - b.data.order);
 const skills = await getCollection("skills");
@@ -32,27 +33,45 @@ const typeCounts = { skill: 0, plugin: 0, tool: 0, collection: 0 } as Record<str
 for (const s of skills) typeCounts[s.data.type]++;
 ---
 
-<aside class="sidebar">
-  <div class="filter-group">
-    <h3>{labels.categories}</h3>
-    <a href={allHref} class={`filter-item ${!current ? "active" : ""}`}>
+{variant === "chips" ? (
+  <nav class="chips-bar" aria-label={labels.categories}>
+    <span class="chips-label">{labels.categories}</span>
+    <a href={allHref} class:list={["chip-link", { active: !current }]}>
       <span>{labels.all}</span>
       <span class="count">{skills.length}</span>
     </a>
     {categories.map((cat) => (
-      <a href={`${base}/categories/${cat.data.id}`} class={`filter-item ${current === cat.data.id ? "active" : ""}`}>
+      <a href={`${base}/categories/${cat.data.id}`} class:list={["chip-link", { active: current === cat.data.id }]}>
         <span>{cat.data.name[locale]}</span>
         <span class="count">{counts.get(cat.data.id) || 0}</span>
       </a>
     ))}
-  </div>
-  <div class="filter-group">
-    <h3>{labels.type}</h3>
-    {(["skill", "plugin", "tool", "collection"] as const).map((t) => (
-      <div class="filter-item" data-type={t} style="display:none">
-        <span>{labels.types[t]}</span>
-        <span class="count">{typeCounts[t]}</span>
+  </nav>
+) : (
+  <aside class="sidebar">
+    <div class="filter-block">
+      <h3>{labels.categories}</h3>
+      <a href={allHref} class={`filter-item ${!current ? "active" : ""}`}>
+        <span>{labels.all}</span>
+        <span class="count">{skills.length}</span>
+      </a>
+      {categories.map((cat) => (
+        <a href={`${base}/categories/${cat.data.id}`} class={`filter-item ${current === cat.data.id ? "active" : ""}`}>
+          <span>{cat.data.name[locale]}</span>
+          <span class="count">{counts.get(cat.data.id) || 0}</span>
+        </a>
+      ))}
+    </div>
+    <div class="filter-block">
+      <h3>{labels.type}</h3>
+      <div class="type-chips">
+        {(["skill", "plugin", "tool", "collection"] as const).map((t) => (
+          <div class="filter-item" data-type-filter={t}>
+            <span>{labels.types[t]}</span>
+            <span class="count">{typeCounts[t]}</span>
+          </div>
+        ))}
       </div>
-    ))}
-  </div>
-</aside>
+    </div>
+  </aside>
+)}

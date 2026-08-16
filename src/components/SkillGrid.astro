@@ -8,24 +8,43 @@ export interface Props {
   base: string;
   sort?: "stars" | "name" | "new";
   ui: any;
+  showTabs?: boolean;
 }
 
-const { skills, locale, base, sort = "stars", ui } = Astro.props;
+const { skills, locale, base, sort = "name", ui, showTabs = true } = Astro.props;
 
 const sorted = [...skills].sort((a, b) => {
   if (sort === "name") return a.data.name.localeCompare(b.data.name);
   if (sort === "new") return b.data.created_at.getTime() - a.data.created_at.getTime();
   return 0;
 });
+
+const tabTypes = [
+  { key: "all", label: ui.tabAll },
+  { key: "skill", label: ui.tabSkills },
+  { key: "plugin", label: ui.tabPlugins },
+  { key: "tool", label: ui.tabTools },
+  { key: "collection", label: ui.tabCollections },
+] as const;
 ---
 
 <div class="toolbar">
-  <div class="results-count" id="results-count">{ui.resultsCount(skills.length)}</div>
-  <select class="sort-select" data-sort>
-    <option value="stars" selected>{ui.sortStars}</option>
-    <option value="name">{ui.sortName}</option>
-    <option value="new">{ui.sortNew}</option>
-  </select>
+  {showTabs && (
+    <div class="tabs" role="group" aria-label={ui.typeLabel}>
+      {tabTypes.map((tab, i) => (
+        <button type="button" class:list={["tab", { active: i === 0 }]} data-type-filter={tab.key} role="tab" aria-selected={i === 0}>
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  )}
+  <div class="toolbar-right">
+    <div class="results-count" id="results-count">{ui.resultsCount(skills.length)}</div>
+    <select class="sort-select" data-sort>
+      <option value="name" selected>{ui.sortName}</option>
+      <option value="new">{ui.sortNew}</option>
+    </select>
+  </div>
 </div>
 
 {sorted.length === 0 ? (
@@ -43,27 +62,13 @@ const sorted = [...skills].sort((a, b) => {
           license_notice: skill.data.license_notice,
           compatibility: skill.data.compatibility,
           tags: skill.data.tags,
+          created_at: skill.data.created_at,
         }}
         href={`${base}/skills/${skill.slug}`}
         locale={locale}
+        authorBy={ui.authorBy}
       />
     ))}
   </div>
 )}
 <p id="search-no-results" style="display: none; padding: 40px 0; color: var(--color-text-muted);">{ui.noResults}</p>
-
-<script>
-  const select = document.querySelector("[data-sort]") as HTMLSelectElement;
-  const grid = document.getElementById("skills-grid");
-  if (select && grid) {
-    select.addEventListener("change", () => {
-      const cards = Array.from(grid!.children) as HTMLElement[];
-      const sorted = cards.sort((a, b) => {
-        const at = a.querySelector("h3")?.textContent || "";
-        const bt = b.querySelector("h3")?.textContent || "";
-        return select.value === "name" ? at.localeCompare(bt) : 0;
-      });
-      sorted.forEach((c) => grid!.appendChild(c));
-    });
-  }
-</script>
